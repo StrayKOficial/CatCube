@@ -36,16 +36,19 @@ public:
 /**
  * Workspace - Contains all 3D objects (like Workspace in Roblox)
  */
-class Workspace : public Instance {
+class Workspace : public Model {
 public:
-    static constexpr const char* ClassName = "Workspace";
-    
-    Workspace() : Instance("Workspace") {
-        m_name = "Workspace";
-    }
-    
+    Workspace() : Model("Workspace") { setName("Workspace"); }
     bool isA(const std::string& className) const override {
-        return className == "Workspace" || Instance::isA(className);
+        return className == "Workspace" || Model::isA(className);
+    }
+};
+
+class Players : public Instance {
+public:
+    Players() : Instance("Players") { setName("Players"); }
+    bool isA(const std::string& className) const override {
+        return className == "Players" || Instance::isA(className);
     }
 };
 

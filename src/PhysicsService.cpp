@@ -70,6 +70,7 @@ void PhysicsService::update(float deltaTime) {
 
 void PhysicsService::addPart(std::shared_ptr<BasePart> part) {
     if (!m_dynamicsWorld || !part) return;
+    if (m_bodies.count(part)) return; // Already exists
     
     // Respect CanCollide - if false, don't add to physics world (purely visual)
     if (!part->canCollide()) return;

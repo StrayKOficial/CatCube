@@ -149,7 +149,8 @@ private:
             return 1;
         }
         
-        if (auto p = std::dynamic_pointer_cast<Part>(inst)) {
+        // Handle all BasePart properties (Position, Size, etc.)
+        if (auto p = std::dynamic_pointer_cast<BasePart>(inst)) {
             if (k == "Position") {
                 Vector3 pos = p->getPosition();
                 lua_newtable(L);
@@ -166,6 +167,13 @@ private:
                 return 1;
             } else if (k == "Anchored") {
                 lua_pushboolean(L, p->isAnchored());
+                return 1;
+            } else if (k == "Color") {
+                Color3 c = p->getColor();
+                lua_newtable(L);
+                lua_pushnumber(L, c.r); lua_setfield(L, -2, "r");
+                lua_pushnumber(L, c.g); lua_setfield(L, -2, "g");
+                lua_pushnumber(L, c.b); lua_setfield(L, -2, "b");
                 return 1;
             }
         }
@@ -186,27 +194,24 @@ private:
             if (lua_isnil(L, 3)) inst->setParent(nullptr);
             else inst->setParent(checkInstance(L, 3));
         }
-        else if (auto p = std::dynamic_pointer_cast<Part>(inst)) {
+        else if (auto p = std::dynamic_pointer_cast<BasePart>(inst)) {
             if (k == "Position" && lua_istable(L, 3)) {
-                lua_getfield(L, 3, "x"); float x = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "y"); float y = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "z"); float z = (float)lua_tonumber(L, -1);
+                lua_getfield(L, 3, "x"); float x = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "y"); float y = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "z"); float z = (float)lua_tonumber(L, -1); lua_pop(L, 1);
                 p->setPosition({x, y, z});
-                lua_pop(L, 3);
             } else if (k == "Size" && lua_istable(L, 3)) {
-                lua_getfield(L, 3, "x"); float x = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "y"); float y = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "z"); float z = (float)lua_tonumber(L, -1);
+                lua_getfield(L, 3, "x"); float x = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "y"); float y = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "z"); float z = (float)lua_tonumber(L, -1); lua_pop(L, 1);
                 p->setSize({x, y, z});
-                lua_pop(L, 3);
             } else if (k == "Anchored") {
                 p->setAnchored(lua_toboolean(L, 3));
             } else if (k == "Color" && lua_istable(L, 3)) {
-                lua_getfield(L, 3, "r"); float r = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "g"); float g = (float)lua_tonumber(L, -1);
-                lua_getfield(L, 3, "b"); float b = (float)lua_tonumber(L, -1);
+                lua_getfield(L, 3, "r"); float r = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "g"); float g = (float)lua_tonumber(L, -1); lua_pop(L, 1);
+                lua_getfield(L, 3, "b"); float b = (float)lua_tonumber(L, -1); lua_pop(L, 1);
                 p->setColor({r, g, b});
-                lua_pop(L, 3);
             }
         }
         
