@@ -1,4 +1,6 @@
 #include "NetworkService.hpp"
+#include <cstring>
+#include <iostream>
 
 namespace CatCube {
 
@@ -109,13 +111,17 @@ void NetworkService::handleEvents() {
                 std::cout << "Connected: " << event.peer->address.host << ":" << event.peer->address.port << std::endl;
                 if (onPlayerJoined) onPlayerJoined((uint32_t)event.peer->incomingPeerID);
                 
-                // If server, send Map Metadata to the new client immediately
+                // SERVER: Immediately send the current MAP NAME to the new client
                 if (m_role == NetworkRole::Server) {
                     struct { uint8_t t; char name[64]; } mp;
                     mp.t = 254; // PACKET_METADATA
+                    memset(mp.name, 0, 64);
                     strncpy(mp.name, m_mapName.c_str(), 63);
+                    
+                    std::cout << "Network: Sending map metadata [" << mp.name << "] to peer." << std::endl;
                     ENetPacket* p = enet_packet_create(&mp, sizeof(mp), ENET_PACKET_FLAG_RELIABLE);
                     enet_peer_send(event.peer, 0, p);
+                    enet_host_flush(m_host);
                 }
                 break;
 
