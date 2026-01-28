@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Shared", "src\CatCube.Shared\CatCube.Shared.csproj", "{4B39A066-5085-4E7B-9020-0062C7667C19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Server", "src\CatCube.Server\CatCube.Server.csproj", "{6F109E96-7D58-450F-A186-097561D3A536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Client", "src\CatCube.Client\CatCube.Client.csproj", "{581788E1-D1FC-459E-91C6-0D3CC5A65DF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Launcher", "src\CatCube.Launcher\CatCube.Launcher.csproj", "{228308E4-9042-4A8E-8A5E-26E074747CCF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9B326194-ECE9-41EE-9670-FCBBCCBE7A03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Studio", "src\CatCube.Studio\CatCube.Studio.csproj", "{695909CB-2FFB-43F9-8806-1F498B5EBB61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatCube.Rendering", "src\CatCube.Rendering\CatCube.Rendering.csproj", "{67CFEDEA-0132-490B-8E21-F4D47908C361}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B39A066-5085-4E7B-9020-0062C7667C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B39A066-5085-4E7B-9020-0062C7667C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B39A066-5085-4E7B-9020-0062C7667C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B39A066-5085-4E7B-9020-0062C7667C19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F109E96-7D58-450F-A186-097561D3A536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F109E96-7D58-450F-A186-097561D3A536}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F109E96-7D58-450F-A186-097561D3A536}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F109E96-7D58-450F-A186-097561D3A536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{581788E1-D1FC-459E-91C6-0D3CC5A65DF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{581788E1-D1FC-459E-91C6-0D3CC5A65DF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{581788E1-D1FC-459E-91C6-0D3CC5A65DF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{581788E1-D1FC-459E-91C6-0D3CC5A65DF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{228308E4-9042-4A8E-8A5E-26E074747CCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{228308E4-9042-4A8E-8A5E-26E074747CCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{228308E4-9042-4A8E-8A5E-26E074747CCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{228308E4-9042-4A8E-8A5E-26E074747CCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{695909CB-2FFB-43F9-8806-1F498B5EBB61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{695909CB-2FFB-43F9-8806-1F498B5EBB61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{695909CB-2FFB-43F9-8806-1F498B5EBB61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{695909CB-2FFB-43F9-8806-1F498B5EBB61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67CFEDEA-0132-490B-8E21-F4D47908C361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CFEDEA-0132-490B-8E21-F4D47908C361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67CFEDEA-0132-490B-8E21-F4D47908C361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67CFEDEA-0132-490B-8E21-F4D47908C361}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{695909CB-2FFB-43F9-8806-1F498B5EBB61} = {9B326194-ECE9-41EE-9670-FCBBCCBE7A03}
+		{67CFEDEA-0132-490B-8E21-F4D47908C361} = {9B326194-ECE9-41EE-9670-FCBBCCBE7A03}
+	EndGlobalSection
+EndGlobal

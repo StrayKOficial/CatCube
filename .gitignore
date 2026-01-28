@@ -1,17 +1,10 @@
-# CatCube GitIgnore
-build/
-bin/
-obj/
-launcher/node_modules/
-launcher/Discovery.exe
-server/*.log
-*.log
-*.png
-*.gif
-.DS_Store
-.vscode/
-cmake-build-*/
-out/
-CatCube
-Discovery.exe
-EOF
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.sln.doccache
+libhostfxr.so
+imgui.ini
+session.json
+.catcube/
