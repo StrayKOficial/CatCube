@@ -87,6 +87,8 @@ bool Engine::init(const std::string& title, int width, int height, bool headless
         auto remoteChar = CharacterHelper::createCharacter("RemotePlayer_" + std::to_string(id), {0, 20, 0});
         if (m_world) remoteChar->setParent(m_world);
         m_remotePlayers[id] = remoteChar;
+        // NOTE: We do NOT register remote players to physics on the client
+        // to prevent "fighting" between network positions and local gravity.
     };
 
     m_networkService.onPlayerLeft = [this](uint32_t id) {
@@ -114,24 +116,15 @@ bool Engine::init(const std::string& title, int width, int height, bool headless
     };
 
     m_networkService.onPositionReceived = [this](uint32_t id, Vector3 pos, float yaw) {
-        (void)yaw;
-        
-        // If we don't know this player yet, create them (this includes the host from client perspective)
         if (m_remotePlayers.find(id) == m_remotePlayers.end()) {
             std::cout << "Engine: Synchronizing remote player " << id << std::endl;
             auto remoteChar = CharacterHelper::createCharacter("Remote_" + std::to_string(id), {0, 0, 0});
             if (m_world) remoteChar->setParent(m_world);
             m_remotePlayers[id] = remoteChar;
-            // Immediate registration
-            registerPhysicsRecursively(remoteChar);
         }
 
-        auto root = std::dynamic_pointer_cast<BasePart>(m_remotePlayers[id]->getPrimaryPart());
-        if (root) {
-            root->setPosition(pos);
-            // Visual rotation and animation update
-            CharacterHelper::updateCharacterPhysics(m_remotePlayers[id], {0,0,0}, false, m_physics, 0.016f);
-        }
+        m_remoteTargets[id] = pos;
+        m_remoteYaws[id] = yaw;
     };
     
     // Capture mouse (lock to window center)
@@ -362,7 +355,10 @@ void Engine::update(float deltaTime) {
             m_networkTimer = 0;
             auto root = std::dynamic_pointer_cast<BasePart>(m_character->getPrimaryPart());
             if (root) {
-                m_networkService.sendPosition(root->getPosition(), 0);
+                float localYaw = 0;
+                auto hum = std::dynamic_pointer_cast<Humanoid>(m_character->findFirstChild("Humanoid"));
+                if (hum) localYaw = hum->currentYaw;
+                m_networkService.sendPosition(root->getPosition(), localYaw);
             }
         }
 
@@ -416,6 +412,34 @@ void Engine::update(float deltaTime) {
         if (m_keys[SDL_SCANCODE_Q] || m_keys[SDL_SCANCODE_LCTRL]) m_camera.position.y -= speed * deltaTime;
         
         m_camera.updateDirection();
+    }
+
+    // --- INTERPOLATE REMOTE PLAYERS (Smooth fluid movement) ---
+    for (auto& pair : m_remotePlayers) {
+        uint32_t id = pair.first;
+        if (m_remoteTargets.count(id)) {
+            Vector3 targetPos = m_remoteTargets[id];
+            float targetYaw = m_remoteYaws.count(id) ? m_remoteYaws[id] : 0;
+            
+            auto root = std::dynamic_pointer_cast<BasePart>(pair.second->getPrimaryPart());
+            auto humanoid = std::dynamic_pointer_cast<Humanoid>(pair.second->findFirstChild("Humanoid"));
+            
+            if (root && humanoid) {
+                Vector3 currentPos = root->getPosition();
+                
+                // Position Lerp
+                Vector3 nextPos = currentPos + (targetPos - currentPos) * 0.18f;
+                
+                // Yaw Lerp (Angle aware)
+                float diff = targetYaw - humanoid->currentYaw;
+                while (diff > 180) diff -= 360;
+                while (diff < -180) diff += 360;
+                humanoid->currentYaw += diff * 0.15f;
+
+                // Sync all visual sub-parts (Head, Torso, etc)
+                CharacterHelper::syncRemoteVisuals(pair.second, nextPos, deltaTime);
+            }
+        }
     }
 
     m_renderer.setCamera(m_camera);

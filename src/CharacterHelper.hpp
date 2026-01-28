@@ -242,15 +242,67 @@ public:
                 }
             };
             
-            // Pivot legs at rp.y - 1.2 (Slightly lower to reach floor better)
-            setLimb("LeftLeg", {-1.0f, -1.2f, 0}, humanoid->currentLegAngle, false);
-            // Right Leg
-            setLimb("RightLeg", {1.0f, -1.2f, 0}, -humanoid->currentLegAngle, false);
-            // Pivot arms at rp.y + 2.5 (Relative to torso top)
-            setLimb("LeftArm", {-3.0f, 2.5f, 0}, isJumping ? 160.0f : -humanoid->currentArmAngle, true);
             // Right Arm
             setLimb("RightArm", {3.0f, 2.5f, 0}, isJumping ? 160.0f : humanoid->currentArmAngle, true);
         }
+    }
+
+    static void syncRemoteVisuals(std::shared_ptr<Model> character, const Vector3& rp, float m_deltaTime) {
+        if (!character) return;
+        auto humanoid = std::dynamic_pointer_cast<Humanoid>(character->findFirstChild("Humanoid"));
+        if (!humanoid) return;
+
+        // Force-anchor all parts of remote character to prevent physics desync
+        for (auto& child : character->getChildren()) {
+            if (auto bp = std::dynamic_pointer_cast<BasePart>(child)) {
+                bp->setAnchored(true);
+                bp->setCanCollide(false); // Remote players shouldn't push the client locally
+            }
+        }
+
+        // Just update animations cycles
+        float dummySpeed = 16.0f;
+        humanoid->walkCycle += dummySpeed * m_deltaTime * 0.55f;
+        humanoid->breatheCycle += m_deltaTime * 0.8f;
+
+        // Simplify for remote: Just stay in a neutral/moving lerp
+        auto lerp = [](float a, float b, float t) { return a + (b - a) * t; };
+        humanoid->currentLegAngle = lerp(humanoid->currentLegAngle, sin(humanoid->walkCycle) * 32.0f, 0.2f);
+        humanoid->currentArmAngle = lerp(humanoid->currentArmAngle, sin(humanoid->walkCycle) * 32.0f, 0.2f);
+        
+        Vector3 visRotNoTilt = {0, humanoid->currentYaw, 0};
+        Vector3 bobOffset = {0, sin(humanoid->walkCycle) * 0.2f, 0};
+
+        auto movePart = [&](const std::string& name, Vector3 offset, Vector3 rot = {0,0,0}) {
+            auto part = std::dynamic_pointer_cast<BasePart>(character->findFirstChild(name));
+            if (part) {
+                part->setPosition(rp + offset + bobOffset);
+                part->setRotation(rot);
+            }
+        };
+
+        movePart("Torso", {0, 1.0f, 0}, {0, humanoid->currentYaw, 0});
+        movePart("Head", {0, 4.0f, 0}, visRotNoTilt);
+
+        auto setLimb = [&](const std::string& name, Vector3 hipOffset, float angle) {
+            auto part = std::dynamic_pointer_cast<BasePart>(character->findFirstChild(name));
+            if (part) {
+                float rad = angle * 3.14159f / 180.0f;
+                Vector3 limbCenterOffset = {0, -2.0f, 0};
+                Vector3 rotatedCenter = { 0, limbCenterOffset.y * cos(rad), limbCenterOffset.y * sin(rad) };
+                part->setPosition(rp + hipOffset + rotatedCenter + bobOffset);
+                part->setRotation({angle, humanoid->currentYaw, 0});
+            }
+        };
+
+        setLimb("LeftLeg", {-1.0f, -1.2f, 0}, humanoid->currentLegAngle);
+        setLimb("RightLeg", {1.0f, -1.2f, 0}, -humanoid->currentLegAngle);
+        setLimb("LeftArm", {-3.0f, 2.5f, 0}, -humanoid->currentArmAngle);
+        setLimb("RightArm", {3.0f, 2.5f, 0}, humanoid->currentArmAngle);
+        
+        // Also move the root part to the actual net position
+        auto root = std::dynamic_pointer_cast<BasePart>(character->getPrimaryPart());
+        if (root) root->setPosition(rp);
     }
 };
 

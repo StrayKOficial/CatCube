@@ -84,6 +84,8 @@ private:
     // Networking
     NetworkService m_networkService;
     std::map<uint32_t, ModelPtr> m_remotePlayers;
+    std::map<uint32_t, Vector3> m_remoteTargets;
+    std::map<uint32_t, float> m_remoteYaws;
 };
 
 } // namespace CatCube

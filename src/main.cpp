@@ -72,6 +72,12 @@ int main(int argc, char* argv[]) {
     if (isServer) title += " (SERVER)";
     else if (!clientIp.empty()) title += " (CLIENT)";
     
+    // Auto-load default map for server if none provided
+    if (isServer && mapPath.empty()) {
+        mapPath = "../maps/Testing_Area.lua";
+        mapName = "Testing_Area";
+    }
+
     if (!mapPath.empty()) {
         title = "CatCube - " + mapPath;
     }
@@ -89,9 +95,9 @@ int main(int argc, char* argv[]) {
 
     // Prepare Local Character Identity
     std::string localPlayerName = "Guest_" + std::to_string(rand() % 9999);
-    if (isServer) localPlayerName = "Host";
-    else if (clientIp.empty()) localPlayerName = "Player";
-    else localPlayerName = "LocalPlayer";
+    if (isServer) localPlayerName = "Host_Account";
+    else if (clientIp.empty()) localPlayerName = "Single_Player";
+    else localPlayerName = "Client_User_" + std::to_string(rand() % 100);
 
     engine.setLocalPlayerName(localPlayerName);
 
